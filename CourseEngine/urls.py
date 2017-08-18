@@ -14,15 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 import xadmin
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from apps.users.views import LoginView
+from apps.users.views import LoginView, RegisterView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
 
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
     url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^register/$', RegisterView.as_view(), name='register'),
+    url(r'^captcha/', include('captcha.urls')),
 ]

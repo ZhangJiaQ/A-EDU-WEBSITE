@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 # Create your views here.
 from django.views import View
 
-from apps.users.forms import LoginForm
+from apps.users.forms import LoginForm, RegisterForm
 from apps.users.models import UserProfile
 
 
@@ -23,6 +23,17 @@ class CustomBackend(ModelBackend):
             return None
 
 
+class RegisterView(View):
+    def get(self, request):
+        register_form = RegisterForm()
+        return render(request, 'register.html', {'register_form':register_form})
+
+    def post(self, request):
+        register_form = RegisterForm(request.POST)
+        if register_form.is_valid():
+            pass
+
+
 class LoginView(View):
 
     def get(self, request):
@@ -31,7 +42,7 @@ class LoginView(View):
     def post(self, request):
         #使用form判断用户POST输入是否合法
         login_form = LoginForm(request.POST)
-        #判断是否合法，如果合法执行以下逻辑
+        #判断输入是否合法，如果合法执行以下逻辑
         if login_form.is_valid():
             user_name = request.POST.get('username', '')
             password = request.POST.get('password', '')
