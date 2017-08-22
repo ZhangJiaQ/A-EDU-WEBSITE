@@ -34,3 +34,11 @@ def send_register_email(email, send_type='register'):
         #如果发送状态为True，则执行下面逻辑
         if send_status:
             pass
+    elif send_type == 'forgetpwd':
+        email_title = '慕课网忘记密码'
+        email_context = '您的修改密码链接为http://127.0.0.1:8000/reset/{0}'.format(code)
+        # 利用Django内置的发送邮件发放发送邮件
+        send_status = send_mail(email_title, email_context, EMAIL_FORM, [email])
+        # 如果发送状态为True，则执行下面逻辑
+        if send_status:
+            pass

@@ -7,7 +7,7 @@ from django.contrib.auth.hashers import make_password
 # Create your views here.
 from django.views import View
 
-from apps.users.forms import LoginForm, RegisterForm
+from apps.users.forms import LoginForm, RegisterForm, ForgetPwdForm, ModifyPwdForm
 from apps.users.models import UserProfile, EmailVerifyRecord
 from apps.users.utils.email_send import send_register_email
 
@@ -35,8 +35,10 @@ class ActiveUser(View):
                 user = UserProfile.objects.get(email=email)
                 user.is_active = True
                 user.save()
-        #用户激活成功，返回到登录页面
-        return render(request, 'login.html')
+                # 用户激活成功，返回到登录页面
+                return render(request, 'login.html')
+        else:
+            return render(request, 'Active_wrong.html')
 
 
 class RegisterView(View):
@@ -52,6 +54,9 @@ class RegisterView(View):
         if register_form.is_valid():
             user_name = request.POST.get('email','')
             password = request.POST.get('password','')
+            #验证用户是否已经存在
+            if UserProfile.objects.filter(username=user_name):
+                return render(request, 'register.html', {'register_form': register_form, 'msg': '用户名已存在'})
             #将注册信息保存到数据库
             user_profile = UserProfile()
             user_profile.username = user_name
@@ -96,3 +101,61 @@ class LoginView(View):
         else:
             return render(request, 'login.html', {'login_form':login_form})
 
+
+class ForgetPsd(View):
+    def get(self, request):
+        #验证用户输入是否合法，如果不合法则返回错误信息，并返回验证码
+        forgetpwd_form = ForgetPwdForm()
+        return render(request, 'forgetpwd.html', {'forgetpwd_form':forgetpwd_form})
+
+    def post(self, request):
+        # 验证用户POST是否合法，如果不合法则返回错误信息
+        forgetpwd_form = ForgetPwdForm(request.POST)
+        #如果输入有效的话，则执行以下逻辑
+        if forgetpwd_form.is_valid():
+            email = request.POST.get('email')
+            #发送密码修改邮件
+            send_register_email(email, 'forgetpwd')
+            #返回发送成功页面
+            return render(request, 'send_sesscufly.html')
+        #如果输入有误，则返回忘记密码页面，并返回错误信息和验证码
+        else:
+            return render(request, 'forgetpwd.html', {'forgetpwd_form': forgetpwd_form, 'msg':'输入有误'})
+
+
+class ResetPwd(View):
+    #找回密码邮件中的找回密码网址GET方法
+    def get(self, request, active_code):
+        #在数据库中找到激活链接的随机字符串
+        all_code = EmailVerifyRecord.objects.filter(code=active_code)
+        if all_code:
+            for code in all_code:
+                #返回URL对应的所需要修改密码的账号，并嵌入在html内
+                email = code.email
+                #返回修改密码的网站和对应的账号
+                return render(request, 'password_reset.html', {'email':email})
+        else:
+            return render(request, 'Active_wrong.html')
+
+
+class ModefyPwd(View):
+    #修改密码的网站
+    def post(self, request):
+        #验证POST是否无误
+        modify_pwd = ModifyPwdForm(request.POST)
+        if modify_pwd.is_valid():
+            pwd1 = request.POST.get('password1')
+            pwd2 = request.POST.get('password2')
+            email = request.POST.get('email')
+            #判断两次输入密码是否一致
+            if pwd1 != pwd2:
+                return render(request, 'password_reset.html', {'email':email, 'msg': '两次输入密码不一致'})
+            user = UserProfile.objects.get(email=email)
+            #修改对应账户密码
+            user.password = make_password(pwd1)
+            user.save()
+            return render(request, 'login.html')
+        #如果POST有误，则返回找回密码网站与对应的账号
+        else:
+            email = request.POST.get('email')
+            return render(request, 'password_reset.html', {'email': email})
