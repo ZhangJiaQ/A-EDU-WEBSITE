@@ -22,7 +22,7 @@ from django.views.generic import TemplateView
 
 from CourseEngine.settings import MEDIA_ROOT
 from apps.users.views import LoginView, RegisterView, ActiveUser, ForgetPsd, ResetPwd, ModefyPwd
-from apps.organization.views import OrgView
+
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^reset/(?P<active_code>.*)/$', ResetPwd.as_view(), name='reset_pwd'),
     url(r'^modify_pwd/$', ModefyPwd.as_view(), name='modify_pwd'),
     #机构列表
-    url(r'^org_list/$', OrgView.as_view(), name='org_list'),
-    #
+    url(r'^org/', include('apps.organization.urls', namespace='org')),
+    #返回图片至前端
     url(r'^media/(?P<path>.*)$', serve, {'document_root':MEDIA_ROOT}),
 ]
