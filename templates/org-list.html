@@ -28,7 +28,7 @@
 					<h2>所在地区</h2>
 					<div class="more">更多</div>
 					<div class="cont">
-                        <a href="?ct="><span class="{% ifequal city_id '' %}active2{% endifequal %}">全部</span></a>
+                        <a href="?ct={{ org_filter }}"><span class="{% ifequal city_id '' %}active2{% endifequal %}">全部</span></a>
                         {% for city in all_citys %}
                             <a href="?city={{ city.id }}&ct={{ org_filter }}"><span class="{% ifequal city_id city.id|stringformat:'i' %}active2{% endifequal %}">{{ city.name }}</span></a>
                         {% endfor %}
@@ -55,7 +55,7 @@
                     </dt>
                     <dd>
                         <div class="clearfix">
-                             <a href="org-detail-homepage.html">
+                             <a href="{% url 'org:org_homepage' org.id %}">
                                  <h1>{{ org.name }}</h1>
                                  <div class="pic fl">
 
