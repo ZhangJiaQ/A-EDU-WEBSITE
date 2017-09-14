@@ -35,8 +35,10 @@ urlpatterns = [
     url(r'^forget/$', ForgetPsd.as_view(), name='forgetpwd'),
     url(r'^reset/(?P<active_code>.*)/$', ResetPwd.as_view(), name='reset_pwd'),
     url(r'^modify_pwd/$', ModefyPwd.as_view(), name='modify_pwd'),
-    #机构列表
+    #分发URL至机构列表
     url(r'^org/', include('apps.organization.urls', namespace='org')),
     #返回图片至前端
     url(r'^media/(?P<path>.*)$', serve, {'document_root':MEDIA_ROOT}),
+    #分发URL至课程列表
+    url(r'^course/', include('apps.course.urls', namespace='course')),
 ]
