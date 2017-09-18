@@ -135,7 +135,7 @@ class AddFavView(View):
         if exist_record:
             #如果收藏存在，则取消收藏
             exist_record.delete()
-            return HttpResponse('{"status":"fail", "msg":"收藏"}', content_type='application/json')
+            return HttpResponse('{"status":"success", "msg":"用户未登录"}', content_type='application/json')
         else:
             #如果收藏不存在，则收藏
             user_fav = UserFavorite()
@@ -144,7 +144,7 @@ class AddFavView(View):
                 user_fav.fav_id = int(fav_id)
                 user_fav.fav_type = int(fav_type)
                 user_fav.save()
-                return HttpResponse('{"status":"fail", "msg":"已收藏"}', content_type='application/json')
+                return HttpResponse('{"status":"success", "msg":"已收藏"}', content_type='application/json')
             else:
                 return HttpResponse('{"status":"fail", "msg":"收藏出错"}', content_type='application/json')
 

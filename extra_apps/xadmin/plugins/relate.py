@@ -139,7 +139,7 @@ class RelateObject(object):
 
         self.field = field
 
-    def filter(self, queryset):
+    def filter(self, queryset: object) -> object:
         return queryset.filter(**{self.lookup: self.value})
 
     def get_brand_name(self):

@@ -33,7 +33,7 @@
 
     <div class="middle companyheader">
         <div class="wp">
-            <img class="fl" style="width: 112px;height: 103px" src="../media/org/2016/11/imooc.png"/>
+            <img class="fl" style="width: 112px;height: 103px" src="{{ MEDIA_URL }}{{ course_org.image }}"/>
             <div class="head fl">
                 <h1>
                     慕课网
@@ -46,8 +46,7 @@
                     <span class="key">5.0</span>
                 </p>
             </div>
-            <div class="btn fr collectionbtn  notlogin
-                 "data-favid="22" data-fav-type="1">
+            <div class="btn fr collectionbtn  notlogin" id="jsLeftBtn">
                  收藏
             </div>
 
@@ -216,12 +215,12 @@ function add_fav(current_elem, fav_id, fav_type){
             }else if(data.status == 'success'){
                 current_elem.text(data.msg)
             }
-        },
+        }
     });
 }
 
-$('.collectionbtn').on('click', function(){
-    add_fav($(this), 1, 2);
+$('#collectionbtn').on('click', function(){
+    add_fav($(this), {{ course_org.id }}, 3);
 });
 
 $(function(){

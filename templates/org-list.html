@@ -178,7 +178,7 @@
             $.ajax({
                 cache: false,
                 type: "POST",
-                url:"{% url 'org:add_ask' %}",
+                url:"{% url 'org:add_fav' %}",
                 data:$('#jsStayForm').serialize(),
                 async: true,
                 success: function(data) {
@@ -193,4 +193,5 @@
             });
         });
     })
+</script>
 {% endblock %}
