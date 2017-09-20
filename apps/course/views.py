@@ -2,9 +2,11 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
-from apps.course.models import Course, CourseResource
+from apps.course.models import Course, CourseResource, Video
 from apps.operation.models import UserFavorite, CourseComment, UserCourse
+from apps.organization.models import Teacher
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from apps.utils.mixin_utils import LoginRequiredMixin
 # Create your views here.
 
 
@@ -69,9 +71,16 @@ class CourseDetailView(View):
         })
 
 
-class CourseInfoView(View):
+class CourseInfoView(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
+
+        #查询用户是否已经学习这门课程
+        user_courses = UserCourse.objects.filter(course=course, user=request.user)
+        if not user_courses:
+            user_course = UserCourse(course=course, user=request.user)
+            user_course.save()
+
         #取出开始学习这门课程的所有用户
         user_courses = UserCourse.objects.filter(course=course)
         #取出开始学习这门课程的所有用户的ID
@@ -88,7 +97,7 @@ class CourseInfoView(View):
         })
 
 
-class CourseCommentView(View):
+class CourseCommentView(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
         course_comment = CourseComment.objects.filter(course=int(course_id))
@@ -127,5 +136,35 @@ class AddCommentView(View):
         else:
             return HttpResponse('{"status":"fail", "msg":"添加出错"}', content_type='application/json')
 
+
+class VideoPlayView(View):
+
+    def get(self, request, video_id):
+        video = Video.objects.get(id=int(video_id))
+        course = video.lesson.course
+
+        #查询用户是否已经学习这门课程
+        user_courses = UserCourse.objects.filter(course=course, user=request.user)
+        if not user_courses:
+            user_course = UserCourse(course=course, user=request.user)
+            user_course.save()
+        course.students += 1
+        course.save()
+
+        #取出开始学习这门课程的所有用户
+        user_courses = UserCourse.objects.filter(course=course)
+        #取出开始学习这门课程的所有用户的ID
+        user_ids = [user_course.user.id for user_course in user_courses]
+        #取出这些用户学习的所有课程
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        #取出所有课程的ID
+        course_ids = [user_course.course.id for user_course in all_user_courses]
+        #取出相关课程
+        relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums")[:5]
+        return render(request, 'course-play.html', {
+            'course': course,
+            'relate_courses':relate_courses,
+            'video':video
+        })
 
 

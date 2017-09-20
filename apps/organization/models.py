@@ -44,6 +44,7 @@ class CourseOrg(models.Model):
 class Teacher(models.Model):
     org = models.ForeignKey(CourseOrg, verbose_name='所属机构')
     name = models.CharField(max_length=50, verbose_name='教师姓名')
+    years_old = models.IntegerField(default=0, verbose_name='年龄mig')
     work_years = models.IntegerField(default=0, verbose_name='工作年限')
     work_company = models.CharField(max_length=50, verbose_name='就职公司')
     work_position = models.CharField(max_length=50, verbose_name='公司职位')
@@ -59,4 +60,7 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_course_all(self):
+        return self.course_set.all()
 

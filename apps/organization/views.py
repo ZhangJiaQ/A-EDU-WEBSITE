@@ -4,7 +4,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views import View
 
-from .models import CourseOrg, CityDict
+from .models import CourseOrg, CityDict, Teacher
 from .forms import UserAskForm
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from apps.operation.models import UserFavorite
@@ -148,3 +148,53 @@ class AddFavView(View):
             else:
                 return HttpResponse('{"status":"fail", "msg":"收藏出错"}', content_type='application/json')
 
+
+class TeacherListView(View):
+
+    def get(self, request):
+        #获取排序方法，并对显示课程进行排序
+        sort = request.GET.get('sort')
+        if sort == 'hot':
+            teachers = Teacher.objects.all().order_by("-click_nums")
+        else:
+            teachers = Teacher.objects.all()
+        #热门课程提取
+        hot_teachers = Teacher.objects.all().order_by("-click_nums")[:3]
+
+        #分页功能的实现
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+        p = Paginator(teachers, 2, request=request)
+
+        paged_teachers = p.page(page)
+        return render(request, 'teachers-list.html', {
+            'teachers':paged_teachers,
+            'hot_teachers':hot_teachers,
+            'sort':sort,
+        })
+
+
+class TeacherDetailView(View):
+
+    def get(self, request, teacher_id):
+        teacher = Teacher.objects.get(id=int(teacher_id))
+        hot_teachers = Teacher.objects.all().order_by("-click_nums")[:3]
+
+        #判断是否已经进行收藏
+        has_fav_org = False
+        has_fav_teacher = False
+        if request.user.is_authenticated():
+           if UserFavorite.objects.filter(user=request.user, fav_id=teacher.id, fav_type=1):
+               has_fav_teacher = True
+           if UserFavorite.objects.filter(user=request.user, fav_id=teacher.org.id, fav_type=3):
+               has_fav_org = True
+
+
+        return render(request, 'teacher-detail.html', {
+            'teacher':teacher,
+            'hot_teachers':hot_teachers,
+            'has_fav_org':has_fav_org,
+            'has_fav_teacher':has_fav_teacher
+        })
