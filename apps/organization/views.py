@@ -3,6 +3,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.views import View
+from django.db.models import Q
 
 from .models import CourseOrg, CityDict, Teacher
 from .forms import UserAskForm
@@ -14,6 +15,12 @@ class OrgView(View):
     def get(self, request):
         all_orgs = CourseOrg.objects.all()
         all_citys = CityDict.objects.all()
+
+        #搜索功能实现
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_orgs = CourseOrg.objects.filter(
+                Q(name__icontains=search_keywords) | Q(desc__icontains=search_keywords))
 
         #城市过滤筛选
         city_id = request.GET.get('city', '')
@@ -152,12 +159,18 @@ class AddFavView(View):
 class TeacherListView(View):
 
     def get(self, request):
-        #获取排序方法，并对显示课程进行排序
+        teachers = Teacher.objects.all()
+
+        # 搜索功能实现
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            teachers = Teacher.objects.filter(
+                Q(name__icontains=search_keywords))
+
+        # 获取排序方法，并对显示课程进行排序
         sort = request.GET.get('sort')
-        if sort == 'hot':
-            teachers = Teacher.objects.all().order_by("-click_nums")
-        else:
-            teachers = Teacher.objects.all()
+        if sort == 'hot' and teachers:
+            teachers = teachers.order_by("-click_nums")
         #热门课程提取
         hot_teachers = Teacher.objects.all().order_by("-click_nums")[:3]
 

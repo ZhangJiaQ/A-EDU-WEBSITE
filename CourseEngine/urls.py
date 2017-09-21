@@ -41,4 +41,6 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)$', serve, {'document_root':MEDIA_ROOT}),
     #分发URL至课程列表
     url(r'^course/', include('apps.course.urls', namespace='course')),
+    # 分发URL至用户列表
+    url(r'^users/', include('apps.users.urls', namespace='users')),
 ]

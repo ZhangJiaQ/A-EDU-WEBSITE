@@ -13,7 +13,7 @@ urlpatterns = [
     #收藏课程机构URL
     url(r'^add_fav/$', AddFavView.as_view(), name='add_fav'),
     #教师列表页
-    url(r'^teacher_list/$', TeacherListView.as_view(), name='teacher_list'),
+    url(r'^teacher/', TeacherListView.as_view(), name='teacher_list'),
     #教师详情页
-    url(r'^teacher/(?P<teacher_id>\d+)/$', TeacherDetailView.as_view(), name='teacher_detail'),
+    url(r'^teacher_detail/(?P<teacher_id>\d+)/$', TeacherDetailView.as_view(), name='teacher_detail'),
 ]

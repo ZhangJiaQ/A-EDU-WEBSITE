@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -15,11 +16,19 @@ class CourseView(View):
         all_courses = Course.objects.all().order_by('-add_time')
         #热门课程展示
         hot_courses = Course.objects.order_by('-click_nums')[:3]
+
+        # 搜索功能实现
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_courses = Course.objects.filter(
+                Q(name__icontains=search_keywords) | Q(desc__icontains=search_keywords) | Q(
+                    detail__icontains=search_keywords))
+
         #课程排序规则
         sort = request.GET.get('sort', '')
-        if sort == 'hot':
+        if sort == 'hot' and all_courses:
             all_courses = all_courses.order_by('-click_nums')
-        elif sort == 'student':
+        elif sort == 'student' and all_courses:
             all_courses = all_courses.order_by('-students')
 
         # 分页功能实现
@@ -141,7 +150,7 @@ class VideoPlayView(View):
 
     def get(self, request, video_id):
         video = Video.objects.get(id=int(video_id))
-        course = video.lesson.course
+        course = video.lesson.cours
 
         #查询用户是否已经学习这门课程
         user_courses = UserCourse.objects.filter(course=course, user=request.user)
