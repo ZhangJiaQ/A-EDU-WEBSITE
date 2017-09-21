@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
@@ -7,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 # Create your views here.
 from django.views import View
 
-from apps.users.forms import LoginForm, RegisterForm, ForgetPwdForm, ModifyPwdForm
+from apps.users.forms import LoginForm, RegisterForm, ForgetPwdForm, ModifyPwdForm, ImageUploadForm
 from apps.users.models import UserProfile, EmailVerifyRecord
 from apps.users.utils.email_send import send_register_email
 from apps.utils.mixin_utils import LoginRequiredMixin
@@ -167,3 +168,21 @@ class UserInfoView(LoginRequiredMixin, View):
         return render(request, 'usercenter-info.html', {
 
         })
+
+
+class ImageUploadView(LoginRequiredMixin, View):
+
+    def post(self, request):
+        '''
+        image_form = ImageUploadForm(request.POST, request.FILES)
+        if image_form.is_valid():
+            image = image_form.cleaned_data['image']
+            request.user.image = image
+            request.user.save
+        '''
+        image_form = ImageUploadForm(request.POST, request.FILES, instance=request.user)
+        if image_form.is_valid():
+            image_form.save()
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status":"fail"}', content_type='application/json')
