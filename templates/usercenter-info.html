@@ -5,7 +5,7 @@
         <div class="wp">
             <ul  class="crumbs">
                 <li><a href="{% url 'index' %}">首页</a>></li>
-                <li><a href="/user/home/">个人中心</a>></li>
+                <li><a href="{% url 'users:user_info' %}">个人中心</a>></li>
                 <li>个人信息</li>
             </ul>
         </div>
@@ -40,7 +40,7 @@
 				<form class="perinform" id="jsEditUserForm" autocomplete="off">
 					<ul class="right">
 						<li>昵&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：
-                           <input type="text" name="nick_name" id="nick_name" value="{{ request.user.nickname }}" maxlength="10">
+                           <input type="text" name="nickname" id="nick_name" value="{{ request.user.nickname }}" maxlength="10">
                             <i class="error-tips"></i>
                         </li>
 						<li>生&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日：
@@ -59,14 +59,14 @@
                             <input type="text" name="mobile" id="mobile" placeholder="请输入你的手机号码" value="" maxlength="10">
                         </li>
                         <li>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：
-                        	<input class="borderno" type="text" name="email" readonly="readonly" value="{{ request.user.username }}"/>
+                        	<input class="borderno" type="text" name="email" readonly="readonly" value="{{ request.user.email }}"/>
                             <span class="green changeemai_btn">[修改]</span>
                     	</li>
 						<li class="button heibtn">
 							<input type="button" id="jsEditUserBtn" value="保存">
 						</li>
 					</ul>
-                    <input type='hidden' name='csrfmiddlewaretoken' value='799Y6iPeEDNSGvrTu3noBrO4MBLv6enY' />
+                    {% csrf_token %}
 				</form>
 			</div>
 		</div>

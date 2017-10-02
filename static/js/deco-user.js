@@ -10,9 +10,9 @@ function sendCodeChangeEmail($btn){
     }
     $.ajax({
         cache: false,
-        type: "get",
+        type: "GET",
         dataType:'json',
-        url:"/users/sendemail_code/",
+        url:"/users/update/email/",
         data:$('#jsChangeEmailForm').serialize(),
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -48,9 +48,9 @@ var verify = verifyDialogSubmit(
     }
     $.ajax({
         cache: false,
-        type: 'post',
+        type: 'POST',
         dataType:'json',
-        url:"/users/update_email/ ",
+        url:"/users/update/email/ ",
         data:$('#jsChangeEmailForm').serialize(),
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -158,7 +158,7 @@ $(function(){
         }
         $.ajax({
             cache: false,
-            type: 'post',
+            type: 'POST',
             dataType:'json',
             url:"/users/info/",
             data:$jsEditUserForm.serialize(),

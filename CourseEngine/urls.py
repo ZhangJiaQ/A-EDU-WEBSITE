@@ -20,14 +20,14 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from CourseEngine.settings import MEDIA_ROOT
-from apps.users.views import LoginView, RegisterView, ActiveUser, ForgetPsd, ResetPwd, ModefyPwd
-
+from CourseEngine.settings import MEDIA_ROOT, STATIC_ROOT
+from apps.users.views import LoginView, RegisterView, ActiveUser, ForgetPsd, ResetPwd, ModefyPwd, IndexView, LogoutView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     #用户操作
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
+    url(r'^$', IndexView.as_view(), name='index'),
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^register/$', RegisterView.as_view(), name='register'),
     url(r'^captcha/', include('captcha.urls')),
@@ -39,8 +39,15 @@ urlpatterns = [
     url(r'^org/', include('apps.organization.urls', namespace='org')),
     #返回图片至前端
     url(r'^media/(?P<path>.*)$', serve, {'document_root':MEDIA_ROOT}),
+    #返回图片至前端
+    url(r'^static/(?P<path>.*)$', serve, {'document_root':STATIC_ROOT}),
     #分发URL至课程列表
     url(r'^course/', include('apps.course.urls', namespace='course')),
     # 分发URL至用户列表
     url(r'^users/', include('apps.users.urls', namespace='users')),
 ]
+
+
+handler404 = 'apps.users.views.page_not_found'
+
+handler500 = 'apps.users.views.page_wrong'

@@ -77,7 +77,12 @@ class OrgHomepageView(View):
     def get(self, request, org_id):
         current_page = 'Homepage'
         course_org = CourseOrg.objects.get(id=int(org_id))
+        #点击数增加
+        course_org.click_nums += 1
+        course_org.save()
+        #取出机构下的课程
         all_course = course_org.course_set.all()[:3]
+        #取出机构下的老师
         all_teacher = course_org.teacher_set.all()[:1]
 
         return render(request, 'org-detail-homepage.html', {
@@ -167,11 +172,11 @@ class TeacherListView(View):
             teachers = Teacher.objects.filter(
                 Q(name__icontains=search_keywords))
 
-        # 获取排序方法，并对显示课程进行排序
+        # 获取排序方法，并对显示教师进行排序
         sort = request.GET.get('sort')
         if sort == 'hot' and teachers:
             teachers = teachers.order_by("-click_nums")
-        #热门课程提取
+        #热门教师提取
         hot_teachers = Teacher.objects.all().order_by("-click_nums")[:3]
 
         #分页功能的实现
@@ -182,6 +187,7 @@ class TeacherListView(View):
         p = Paginator(teachers, 2, request=request)
 
         paged_teachers = p.page(page)
+
         return render(request, 'teachers-list.html', {
             'teachers':paged_teachers,
             'hot_teachers':hot_teachers,
@@ -193,7 +199,12 @@ class TeacherDetailView(View):
 
     def get(self, request, teacher_id):
         teacher = Teacher.objects.get(id=int(teacher_id))
+        #热门教师提取
         hot_teachers = Teacher.objects.all().order_by("-click_nums")[:3]
+
+        #点击数增加
+        teacher.click_nums += 1
+        teacher.save()
 
         #判断是否已经进行收藏
         has_fav_org = False

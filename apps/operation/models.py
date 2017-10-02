@@ -46,6 +46,8 @@ class UserFavorite(models.Model):
 
 
 class UserMessage(models.Model):
+    # 消息分为单个用户接受和系统发给所有用户两种，所以不用外键
+    # 0为所有用户，不为0则表示某位用户
     user = models.IntegerField(default=0, verbose_name='用户')
     message = models.CharField(max_length=300, verbose_name='用户消息')
     has_read = models.BooleanField(default=False, verbose_name='是否已读')

@@ -10,6 +10,7 @@ from apps.organization.models import CourseOrg, Teacher
 
 class Course(models.Model):
     course_org = models.ForeignKey(CourseOrg, verbose_name='课程机构', null=True)
+    is_bannar = models.BooleanField(default=False, verbose_name='是轮播广告位吗？')
     name = models.CharField(max_length=50, verbose_name='课程名称')
     desc = models.CharField(max_length=300, verbose_name='课程描述')
     detail = models.TextField(verbose_name='课程详情')
